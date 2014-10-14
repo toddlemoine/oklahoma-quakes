@@ -1,0 +1,1 @@
+{"type":"Topology","objects":{"quakes":{"type":"GeometryCollection","geometries":[{"type":"Point","coordinates":[0,9999]},{"type":"Point","coordinates":[9999,0]}]}},"arcs":[],"transform":{"scale":[0.09079913582703336,0.076007600760076],"translate":[26.04972043274671,20]}}
