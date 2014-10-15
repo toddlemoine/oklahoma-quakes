@@ -28,7 +28,10 @@
 var width = 960,
     height = 600;
 
-var projection = d3.geo.albersUsa();
+var projection = 
+  d3.geo.albersUsa()
+    .scale(1280)
+    .translate([width / 2, height / 2]);
 
 // Path generator
 var path = d3.geo.path()
