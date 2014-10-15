@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-circle {
-  fill: red;
-}
+  
+  circle {
+    fill: red;
+  }
 
-path {
-  fill: none;
-  stroke: #000;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
+  path {
+    fill: none;
+    stroke: #000;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .land {
+    fill: #ddd;
+  }
 
 </style>
+
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -20,42 +26,43 @@ path {
 <script>
 
 var width = 960,
-    height = 800;
+    height = 600;
 
-var projection = d3.geo.albersUsa()
-  .scale(1500)
-  .translate([width / 2, height / 2]);
+var projection = d3.geo.albersUsa();
 
 // Path generator
 var path = d3.geo.path()
-  .projection(projection);
+  .projection(null);
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
 queue()
-  .defer(d3.json, "build/oklahoma_counties_nop.json")
-  .defer(d3.json, "build/oklahoma_quakes_nop.json")
+  .defer(d3.json, "us.json")
+  .defer(d3.json, "quakes.json")
   .await(ready);
 
-function ready(error, ok, quakes)  {
+function ready(error, us, quakes)  {
   if (error) return console.error(error);
 
-  svg.append("g")
-      .attr("class", "counties")
-    .selectAll("path")
-      .data(topojson.feature(ok, ok.objects.counties).features)
-    .enter().append("path")
+  svg.append("path")
+      .datum(topojson.feature(us, us.objects.nation))
+      .attr("class", "land")
+      .attr("d", path);
+
+  svg.append("path")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("class", "states")
       .attr("d", path);
 
   svg.selectAll("circle")
-    .data(topojson.feature(quakes, quakes.objects.quakes).features)
+    .data(quakes.features)
     .enter()
       .append("circle")
         .attr("r", function(d) { return 5; })
         .attr("transform", function(d) {
-          return "translate("+ path.centroid(d) + ")"
+          return "translate("+ projection(d.geometry.coordinates) + ")"
         });
 
 }
