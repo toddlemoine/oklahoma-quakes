@@ -33,18 +33,17 @@ build/ok_counties.json: build/gz_2010_us_050_00_20m.shp
 		-f GeoJSON \
 		-where "STATE IN ('40')" \
 		$@ \
-		$<
+		$< 
 
+ok_counties.json: build/ok_counties.json
 	node_modules/.bin/topojson \
-		-o build/ok_counties.topo.json \
+		-o ok_counties.json \
 		--id-property GEO_ID \
 		--properties name=NAME \
-		--projection='width = 960, height = 600, d3.geo.albersUsa() \
-			.scale(1280) \
-			.translate([width / 2, height / 2])' \
-		--simplify=.5 \		
-		--filter=none
-		-- $@
+		--projection='width = 960, height = 600, d3.geo.albersUsa().scale(1280).translate([width / 2, height / 2])' \
+		--simplify=.5 \
+		--filter=none \
+		-- counties=build/ok_counties.json
 
 build/states.json: build/counties.json
 	node_modules/.bin/topojson-merge \
@@ -60,33 +59,3 @@ us.json: build/states.json
 		--in-object=states \
 		--out-object=nation \
 		-- $<
-
-# build/oklahoma_counties_topo.json: build/oklahoma_counties.json
-#     node_modules/.bin/topojson \
-#         -o $@ \
-#         --projection 'd3.geo.albersUsa()' \
-#         --width 960 \
-#         --height 800 \
-#         --margin 20 \
-#         --simplify=.5 \
-#         --filter=none \
-#         -- counties=$<
-
-# build/quakes_topo.json: build/quakes.json
-#     node_modules/.bin/topojson \
-#         -o $@ \
-#         --projection 'd3.geo.albersUsa()' \
-#         --width 960 \
-#         --height 800 \
-#         --margin 20 \
-#         --simplify=.5 \
-#         --filter=none \
-#         -- counties=$<
-
-
-#     node_modules/.bin/topojson \
-#         -o build/oklahoma_counties_nop.json \
-#         --simplify=.5 \
-#         --filter=none \
-#         -- counties=build/counties.json 
-#         # -- quakes=build/quakes.json

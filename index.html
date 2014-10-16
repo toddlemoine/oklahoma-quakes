@@ -75,10 +75,11 @@ var g = svg.append("g");
 
 queue()
   .defer(d3.json, "us.json")
+  .defer(d3.json, "ok_counties.json")
   .defer(d3.json, "quakes.json")
   .await(ready);
 
-function ready(error, us, quakes)  {
+function ready(error, us, oklahoma, quakes)  {
   if (error) return console.error(error);
 
   // g.append("path")
@@ -93,6 +94,13 @@ function ready(error, us, quakes)  {
     .enter().append("path")
       .attr("d", path)
       .on("click", clicked);
+      
+  // g.append("g")
+  //   .attr("id", "counties")
+  //   .selectAll("path")
+  //     .data(topojson.feature(us, oklahoma.objects.counties).features)
+  //   .enter().append("path")
+  //     .attr("d", path);
 
   g.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
