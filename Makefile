@@ -13,6 +13,10 @@ build/gz_2010_us_050_00_20m.zip:
 	mkdir -p $(dir $@)
 	curl -o $@ http://www2.census.gov/geo/tiger/GENZ2010/gz_2010_us_050_00_20m.zip
 
+build/counties.csv: build/gz_2010_us_050_00_20m.dbf
+	python ~/bin/dbf2csv/dbf2csv.py $< $@ 
+	
+
 build/counties.json: build/gz_2010_us_050_00_20m.shp
 	node_modules/.bin/topojson \
 		-o $@ \
@@ -23,6 +27,24 @@ build/counties.json: build/gz_2010_us_050_00_20m.shp
 		--simplify=.5 \
 		--filter=none \
 		-- counties=$<
+
+build/ok_counties.json: build/gz_2010_us_050_00_20m.shp
+	ogr2ogr \
+		-f GeoJSON \
+		-where "STATE IN ('40')" \
+		$@ \
+		$<
+
+	node_modules/.bin/topojson \
+		-o build/ok_counties.topo.json \
+		--id-property GEO_ID \
+		--properties name=NAME \
+		--projection='width = 960, height = 600, d3.geo.albersUsa() \
+			.scale(1280) \
+			.translate([width / 2, height / 2])' \
+		--simplify=.5 \		
+		--filter=none
+		-- $@
 
 build/states.json: build/counties.json
 	node_modules/.bin/topojson-merge \
